@@ -1,0 +1,352 @@
+---
+title: "Projekt 1"
+author: "Josefine Sandell"
+date: "2026-02-09"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Uppvärmning
+
+```{r 1.1}
+
+#100 kast, X==3
+
+X <- floor(6*runif(100,0,1)+1)
+Y <- X==3
+relf <- cumsum(Y)/seq(1,100)
+plot(relf)
+win.graph()
+Z <- X==4
+relfZ <- cumsum(Z)/seq(1,100)
+diff <- cumsum(Y)-cumsum(Z)
+plot(diff)
+
+# 10 000 kast
+
+X1 <- floor(6*runif(10000,0,1)+1)
+Y1 <- X1==3
+relf1 <- cumsum(Y1)/seq(1,10000)
+plot(relf1)
+Z1 <- X1==4
+relf1Z <- cumsum(Z1)/seq(1, 10000)
+diff1 <- cumsum(Y1)-cumsum(Z1)
+plot(diff1)
+
+```
+
+Skillnaden mellan absoluta frekvensen av treor och fyror växer när n blir större. Den börjar också närma sig mot en normalfördelning.
+
+```{r 1.2}
+
+plot(log10(seq(1,10000)), relf1)
+
+
+X2 <- floor(6*runif(10000,0,1)+1)
+Y2 <- X2==3
+Z2 <- X2==4
+relf2 <- cumsum(Y2)/seq(1,10000)
+relf2Z <- cumsum(Z2)/seq(1,10000)
+
+relf1_plot <- plot(log10(seq(1,10000)), relf1)
+relf2_plot <- points(log10(seq(1,10000)),relf2,col ="red")
+
+```
+
+```{r 1.3}
+
+# 100 000 kast, X=3
+
+X3 <- floor(6*runif(100000,0,1)+1)
+Y3 <- X3==3
+relf3 <- cumsum(Y3)/seq(1,100000)
+
+X4 <- floor(6*runif(100000,0,1)+1)
+Y4 <- X4==3
+relf4 <- cumsum(Y4)/seq(1,100000)
+
+
+relf3_plot <- plot(log10(seq(1,100000)), relf3)
+relf4_plot <- points(log10(seq(1,100000)),relf4,col ="red")
+
+# 100 000 kast, X=4
+
+Z3 <- X3==4
+relf3Z <- cumsum(Z3)/seq(1,100000)
+
+
+Z4 <- X4==4
+relf4Z <- cumsum(Z4)/seq(1,100000)
+
+
+relf3Z_plot <- plot(log10(seq(1,100000)), relf3Z)
+relf4Z_plot <- points(log10(seq(1,100000)),relf4Z,col ="red")
+
+```
+
+*Hur många kast gissar du behövas för att vi säkert skall kunna uppskatta sannolikheten för en trea respektive en fyra? Ett mer motiverat svar kan inte ges förrän längre fram i kursen.*
+
+Ett stort antal kast, mellan 10 000 och 100 000 kast, krävs för att säkert kunna uppskatta sannolikheten för en tre eller en fyra. Lika många kast krävs för trean och fyran.
+
+*Vilka slutsatser kan du dra angående skillnaden av de relativa frekvenserna av treor och fyrar i en realisering? Är resultatet i de olika realiseringarna samstämmigt? Vilket resultat förväntar du dig rent teoretiskt vid många kast med en symmetrisk tärning? Vilken fördelning kommer differensen att få?*
+
+De relativa frekvenserna av treor och fyrar är lika. Rent teoretiskt förväntar vi oss att sannolikheten att få en trea och en fyra är samma (1/6) och att de relativa frekvenserna reflekterar detta då en fyra är lika frekvent som en trea. Därför kommer fördelningen av skillnaden vara ungefär normalfördelat med mu = 0.
+
+De absoluta frekvenserna av treor och fyror är inte lika eftersom ju större n blir desto mer växer differenserna. Därför kommer y-axeln växa när n blir större.
+
+```{r 3 vs 4}
+
+
+# skillnad mellan absoluta frekvenserna
+# diff <- cumsum(Y)-cumsum(Z)
+plot(diff) # n = 100
+# diff1 <- cumsum(Y1)-cumsum(Z1)
+plot(diff1) # n = 10 000
+diff2 <- cumsum(Y3)-cumsum(Z3)
+plot(diff2) # n = 100 000
+diff3 <- cumsum(Y4)-cumsum(Z4)
+plot(diff3) # n = 100 000
+
+# skillnad mellan relativa frekvenserna
+reldiff <- relf-relfZ
+reldiff1 <- relf1-relf1Z # n = 10000
+plot(reldiff)
+plot(reldiff1)
+reldiff2 <- relf2-relf2Z
+plot(reldiff2)
+reldiff3 <- relf3-relf3Z
+plot(reldiff3)
+
+
+```
+
+*Är kurvan över skillnaden mellan antalet treor och antalet fyror förenlig med din slutsats från föregående punkt? Förklara också varför resultatet blev som det blev. Vad är det för principiell skillnad mellan fördelningarna för skillnanden av de relativa differenserna gentemot skillnaden av absolutfrekvenserna av antalet treor och fyror?*
+
+Kurvan över skillnaden mellan de absoluta frekvenserna är ungefär förenlig med min slutsats. Skillnaderna verkar approximera en normalfördelning närmast när n är mindre; när n blir större så liknar fördelningen inte en normalfördelning lika mycket.
+
+Kurvan över skillnaden mellan relativa frekvenserna är dock inte förenlig med min slutsats. Kurvan verkar inte vara normalfördelad, utan kanske exponentialfördelad med en mycket stor lambda, eller likformigt fördelad om man bortser från början av grafen.
+
+Jag vet inte varför det blev så här. Fråga Peter?
+
+# Binomialfördelningen
+
+```{r 2.1 Binomialfördelningen}
+
+set.seed(120)
+
+xbino1 <- rbinom(25,10,0.2)
+xomega <- seq(0,10,1)
+xkategori <- factor(xbino1) #kategorisering av resultatet i xbino1
+xfreq <- table(xkategori)
+relfreq <- prop.table(xfreq) # skattningen av sannolikhetsfunktionen
+
+print(relfreq)
+
+xutfall <- c(0,1,2,3,4,5)
+
+utfall <- as.data.frame(relfreq)
+utfall$xkategori <- c(0:(length(relfreq)-1))
+utfall <- as.list(utfall)
+
+
+plot(xutfall, relfreq, type = "h", col="blue")
+
+xomega <- seq(0,10,1)
+px <- dbinom(xomega, 10, 0.2) # {x = 0, 1, ..., 10}
+plot(xomega, px, type="h", col= "red")
+points(utfall$xkategori, utfall$Freq)
+
+
+
+```
+
+```{r 2.2}
+
+set.seed(121)
+
+# när n = 100
+xbino1 <- rbinom(100,10,0.2) # n = 100
+xomega <- seq(0,10,1)
+xkategori <- factor(xbino1) #kategorisering av resultatet i xbino1
+xfreq <- table(xkategori)
+relfreq <- prop.table(xfreq) # skattningen av sannolikhetsfunktionen
+
+relfreq
+
+
+utfall <- as.data.frame(relfreq)
+utfall$xkategori <- c(0:(length(relfreq)-1))
+utfall <- as.list(utfall)
+
+
+xomega <- seq(0,10,1) # utfallsrum
+px <- dbinom(xomega, 10, 0.2) # {x = 0, 1, ..., 10}
+plot(xomega, px, type="h", col= "red", xlab = "", ylab = "p", main = "X tillhör Bin(10, 0.2), n = 100")
+points(utfall$xkategori, utfall$Freq)
+
+
+# När n = 1000
+
+xbino1 <- rbinom(1000,10,0.2) # n = 1000
+xomega <- seq(0,10,1)
+xkategori <- factor(xbino1) #kategorisering av resultatet i xbino1
+xfreq <- table(xkategori)
+relfreq <- prop.table(xfreq) # skattningen av sannolikhetsfunktionen
+
+relfreq
+
+utfall <- as.data.frame(relfreq)
+utfall$xkategori <- c(0:(length(relfreq)-1))
+utfall <- as.list(utfall)
+
+xomega <- seq(0,10,1) # utfallsrum
+px <- dbinom(xomega, 10, 0.2) # {x = 0, 1, ..., 10}
+plot(xomega, px, type="h", col= "red", xlab = "", ylab = "p", main = "X tillhör Bin(10, 0.2), n = 1000")
+points(utfall$xkategori, utfall$Freq)
+
+
+# När n = 10 000
+
+xbino1 <- rbinom(10000,10,0.2) # n = 10000
+xomega <- seq(0,10,1)
+xkategori <- factor(xbino1) #kategorisering av resultatet i xbino1
+xfreq <- table(xkategori)
+relfreq <- prop.table(xfreq) # skattningen av sannolikhetsfunktionen
+
+relfreq
+
+utfall <- as.data.frame(relfreq)
+utfall$xkategori <- c(0:(length(relfreq)-1))
+utfall <- as.list(utfall)
+
+
+
+xomega <- seq(0,10,1) # utfallsrum
+px <- dbinom(xomega, 10, 0.2) # {x = 0, 1, ..., 10}
+plot(xomega, px, type="h", col= "red", xlab = "", ylab = "p", main = "X tillhör Bin(10, 0.2), n = 10000")
+points(utfall$xkategori, utfall$Freq)
+
+
+```
+
+För s.v. X ∈ Bin(10, 0.2), så behövs minst 10 000 stickprov för att att hitta en rimlig överensstämmelse mellan den skattade sannolikhetsfunktionen och den teoretiska sannolikhetsfunktionen pX(x) enligt mina undersökningar.
+
+*Gäller samma sak för den s.v. X ∈ Bin(10, 0.5) och för den s.v. X ∈ Bin(25, 0.7)?*
+
+```{r 2.3}
+
+set.seed(123)
+
+# när X ∈ Bin(10, 0.5)
+
+xbino1 <- rbinom(10000,10,0.5) # n = 10000
+xomega <- seq(0,10,1)
+xkategori <- factor(xbino1) #kategorisering av resultatet i xbino1
+xfreq <- table(xkategori)
+relfreq <- prop.table(xfreq) # skattningen av sannolikhetsfunktionen
+
+relfreq
+
+utfall <- as.data.frame(relfreq)
+utfall$xkategori <- c(0:(length(relfreq)-1))
+utfall <- as.list(utfall)
+
+
+
+xomega <- seq(0,10,1) # utfallsrum
+px <- dbinom(xomega, 10, 0.5) # {x = 0, 1, ..., 10}
+plot(xomega, px, type="h", col= "red", xlab = "", ylab = "p", main = "X tillhör Bin(10, 0.5), n = 10000")
+points(utfall$xkategori, utfall$Freq)
+
+# när X ∈ Bin(25, 0.7)
+
+xbino1 <- rbinom(10000,25,0.7) # n = 10000
+xomega <- seq(0,25,1)
+xkategori <- factor(xbino1) #kategorisering av resultatet i xbino1
+xfreq <- table(xkategori)
+relfreq <- prop.table(xfreq) # skattningen av sannolikhetsfunktionen
+
+
+utfall <- as.data.frame(relfreq)
+utfall$xkategori <- c(0:(length(relfreq)-1))
+utfall <- as.list(utfall)
+
+
+xomega <- seq(0,25,1) # utfallsrum
+px <- dbinom(xomega, 25, 0.7) # {x = 0, 1, ..., 25}
+plot(xomega, px, type="h", col= "red", xlab = "", ylab = "p", main = "X tillhör Bin(25, 0.7), n = 10000")
+points(utfall$xkategori, utfall$Freq)
+
+```
+Enligt figurerna ovan så gäller samma sak för dessa två s.v. också. Minst 10 000 stickprov krävs för att hitta en rimlig överrensstämmelse mellan funktionerna.
+
+# Normalfördelningen
+
+``` {r 3.1 Normalfördelningen}
+
+a1 <- rnorm(50, 100, 15)
+
+a1sum <- summary(a1)
+
+boxplot(a1)
+hist(a1)
+
+normal <- rnorm(10,10,2)
+uni <- runif(10,10,20)
+
+hist(normal)
+hist(uni)
+
+
+
+```
+
+Stickproven stämmer inte särskilt väl med populationerna när n = 10.
+
+```{r 3.2}
+# när n = 50
+
+n50 <- rnorm(50, 10, 2)
+u50 <- runif(50, 10, 20)
+hist(n50)
+hist(u50)
+
+# börjar stämma lite mer överens med populationerna
+
+# n = 500
+
+n500 <- rnorm(500, 10, 2)
+u500 <- runif(500, 10, 20)
+hist(n500)
+hist(u500)
+
+# stämmer överens bättre nu när n är högre
+
+```
+
+Överensstämmelsen bör bli bättre när n blir högre, och detta speglas i figurerna ovan. När n växer så ökar överensstämningen.
+
+```{r 3 uppgift 2}
+
+norm1 <- rnorm(1000, 10, 2)
+uni1 <- runif(1000, 10, 20)
+exp1 <- rexp(1000, 1)
+
+hist(norm1)
+hist(uni1)
+hist(exp1)
+
+```
+
+Histogrammen visar att stickprovsfördelningarna verkar stämma överens med populationsfördelningarna.
+
+# QQ-plot och qqnorm
+
+```{4 QQ-plot}
+
+
+
+```
