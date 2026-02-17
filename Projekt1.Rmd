@@ -2,7 +2,9 @@
 title: "Projekt 1"
 author: "Josefine Sandell"
 date: "2026-02-09"
-output: pdf_document
+output:
+  word_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -345,8 +347,124 @@ Histogrammen visar att stickprovsfördelningarna verkar stämma överens med pop
 
 # QQ-plot och qqnorm
 
-```{4 QQ-plot}
+```{r QQ-plot}
+
+qqnorm(norm1)
+qqnorm(uni1)
+qqnorm(exp1)
+
+```
+
+```{r uppgift 3}
+
+norm1 <- rnorm(1000, 10, 2)
+norm2 <- rnorm(1000, 10, 2)
+
+sum12 <- norm1+norm2 #summan
+
+hist(sum12) # histogram som visar en approximativ normalfördelning
+qqnorm(sum12) # qqplot norm  
+
+2+2 # teoretiska väntevärdet = 4
+sqrt(2)*2 # teoretiska sd = 2.83
+mean(sum12) # beräknade medelvärdet = 19.95 
+sd(sum12) # beräknade sd = 2.79
 
 
 
 ```
+Summan har en normalfördelning. Väntevärdet bör vara summan av mu för norm1 och norm2, vilket blir 20. Standardavvikelsen bör vara roten av 2 multiciplerat med 2, vilket är ungefär 2.83.
+
+De beräknade stickprovsvärden är nära de teoretiska värden. Medelvärdet blev 19.95 jämfört med den teoretiska 20, och standardavvikelsen blev 2.79 jämfört med 2.83.
+
+```{r 5.1 fördelningsanpassning}
+
+X <- rnorm(100, 2, 1)
+sortX <- sort(X)
+Fn <- seq(1, length(sortX),1)/(length(sortX)+1) # plotposition för Fn
+plot(sortX, Fn, type="s", col="blue")
+grid()
+
+
+summary(Fn) # skatta medelvärdet, kvartilerna, och medianen
+
+plot(sortX, Fn, type="s", col="blue")
+grid() # nu kan vi komplettera figuren med den riktiga fördelningsfunktionen
+points(sortX, pnorm(sortX, 2, 1), type="l", col="red") #pnorm är fördelningsfunktion for en normalfördelning
+
+
+
+```
+
+# Uppgift 4
+
+```{r 5.2 Normplot i R-paket nsRFA}
+
+library(nsRFA)
+
+# normplots
+normplot(X)
+normpoints(X)
+
+# skatta stickprovets medelvärdet och standardavvikelsen
+mean(X) # medelvärde = 2.0059
+sd(X) # standardavvikelse = 1.1398
+
+```
+Normalfördelningsplotten visar att det skattade medelvärdet är ungefär 2, och att standardavvikelsen är 1.  
+
+Detta stämmer med det använda stickprovet vilket har ett medelvärde på 2 och standardavvikelse på 1.14.
+
+```{r 5.3 jordbävningar}
+
+load("Quakes.RData")
+
+hist(quakeper, freq=F)
+m <- mean(quakeper)
+med <- median(quakeper)
+s <- sd(quakeper)
+s2 <- var(quakeper)
+myrange <- range(quakeper)
+summary(quakeper)
+
+
+```
+
+# Uppgift 5
+
+```{r Uppgift 5}
+
+365*5 # ca 5 år i dagar
+
+less1000 <- quakeper[quakeper < 1000]
+length(less1000)
+
+more1825 <- quakeper[quakeper > 1825]
+length(more1825)
+
+print(m)
+print(med)
+
+
+```
+Det verkar inte troligt att det kan gå längre period än 5 år mellan kraftiga jordbävningar. På histogrammet ser man att väldigt få jordbävningar inträffade fler än 1500 dagar i mellan, vilket motsvarar cirka 4 år. Variabeln "more1825" visar att endast 1 kraftig jordbävning hände med mer än 1825 dagar, eller cirka 5 år, i mellan. 
+
+
+Stickprovsmedelvärdet för antal dagar mellan kraftiga jordbävningar var 437.2, och medianen var 331.5. Därför kan vi skatta att jordbävningarna inträffar var 437:e dag, eller med cirka 1.2 år i mellan händelser, under denna period.
+
+# Uppgift 6
+
+```{r uppgift 6}
+
+probless1000 <- length(less1000)/length(quakeper)
+probless1000 # sannolikheten att en period mellan jordbävningar är kortare än 1000 dagar
+
+more200 <- quakeper[quakeper > 200]
+length(more200) # period längre än 200 dagar
+
+probmore200 <- length(more200)/length(quakeper)
+probmore200 # sannolikheten att en period mellan jordbävningar är längre än 200 dagar
+
+
+```
+
